@@ -40,7 +40,7 @@ Barber() {
         else 
 
         {
-            //sem_post(&rw_sem_post);
+            sem_post(&rw_sleeping);
             chairs += 1;
             sem_post(&barber_ready);
             sem_post(&rw_chairs);
@@ -91,10 +91,12 @@ Customer() {
             sem_wait(&barber_ready);
             sem_wait(&cutting);
             printf("Customer has had his hair cut\n"); // been wakeup after random 5 s 
+            sleep(5);
             helped = true;
           // -------------------?? after helped RW , need post
-       //    sem_post(
-
+           sem_post(&cutting);
+           sem_post(&barber_ready);
+  
         }
         else
         {
@@ -130,7 +132,7 @@ int main()
  
  }
 
- for (int j=0; j<4; j++)
+ for (int j=0; j<10; j++)
  {
      pthread_create(&tc[j], NULL, Customer,NULL);
  }   
@@ -142,6 +144,7 @@ int main()
     sem_destroy(&rw_sleeping);
     sem_destroy(&rw_cutting);
     sem_destroy(&barber_ready);
+    pthread_exit(0);
     //sem_destroy(&rm_barbar_ready);
     //sem_destroy(&rm_barbar_ready);
 }
