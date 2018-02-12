@@ -7,6 +7,10 @@
 #include <unistd.h>
 #define N  4
 
+
+//TODO Define global data structures to be used
+
+ unsigned int v[N]; // using array to implement patient queue 
 int chairs       = N ;// available chairs
 bool is_sleeping = false;
 bool is_treating  = false ;
@@ -104,8 +108,9 @@ void *patient_thread(void *arg) {
             served ++;
 
             printf("Served patient = %d,\n", served);
-            sleep(5);
-            helped = true;
+        int treat_time = 4 + rand() % 4;
+            sleep(treat_time);
+        helped = true;
            sem_post(&treating);
            sem_post(&doctor_ready);
   
@@ -126,6 +131,7 @@ void *patient_thread(void *arg) {
 int main()
 
 {
+
     sem_init(&rw_chairs, 0, 1);
 
     sem_init( &rw_sleeping, 0, 1);
@@ -139,13 +145,16 @@ int main()
  for (int i=0; i<3; i++)
 
  {
-     pthread_create(&tb[i], NULL, doctor_thread,NULL);
- 
+     pthread_create(&tb[i], NULL, doctor_thread,&v);
  }
 
  for (int j=0; j<5; j++)
  {
      pthread_create(&tc[j], NULL, patient_thread,NULL);
+     sleep(rand() % 5);    
+        // create patient  init the treat time to be rand betwee`n 4-8
+     //   int treat_time = 4 + rand() % 4;
+     //   enqueue(v, j);
  }   
 
  printf("IN main\n");
